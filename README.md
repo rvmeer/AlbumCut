@@ -8,10 +8,19 @@ The tool retrieves the album information with Spotify and downloads the album co
 Then, it creates separate MP3 files based on the track length information obtained from spotify.
 The MP3 files contain ID3 info, including the album cover.
 
+<p>
 Depends on:
-ffmeg (you should install this on your machine, should be in the PATH)
+<ul>
+<li>ffmeg (you should install this on your machine, should be in the PATH)
+</ul>
 
+<p>
 Python dependencies:
-requests
-spotipy
-pydub
+<ul>
+<li>requests
+<li>spotipy
+<li>pydub
+</ul>
+
+<p>
+Use this tool for your own benefit, do not distribute the created MP3 files!
