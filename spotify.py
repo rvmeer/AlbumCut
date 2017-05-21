@@ -12,12 +12,12 @@ username = None
 client_id = None
 client_secret = None
 redirect_uri = None
-with open('albumcut_config.json','rb') as config_file:
+with open('./albumcut_config.json','rb') as config_file:
     config = json.loads(config_file.read())
     username = config['username']
     client_id = config['client_id']
     client_secret = config['client_secret']
-    redirect_url = config['redirect_url']
+    redirect_url = config['redirect_uri']
 
 
 def get_artist_url(artist_name):
@@ -126,9 +126,10 @@ def cut_album(audio_file_path, cover_file_path, artist_name, album):
 
         if start_duration > len(audio):
             print 'Audio file {0} is too short, terminating'.format(audio_file_path)
-            exit()
+            return False
 
     print('All tracks exported successfully')
+    return True
 
 
 class ExtendedSpotify(spotipy.Spotify):

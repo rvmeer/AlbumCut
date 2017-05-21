@@ -12,7 +12,7 @@ def stream_album(artist_name, album_name):
 
     album = spotify.get_album(artist_url, album_name, 'NL')
     if not album:
-        exit()
+        return False
 
     cover_file_path = spotify.save_cover(album, '.')
 
@@ -34,9 +34,9 @@ def stream_album(artist_name, album_name):
 
 
     # Now
-    spotify.cut_album(audio_file_path, cover_file_path, artist_name, album)
+    return spotify.cut_album(audio_file_path, cover_file_path, artist_name, album)
 
 if __name__ == "__main__":
-    stream_album('Ayreon', 'The Source')
+    stream_album('Pietje', 'The Source')
     stream_album('Ayreon', 'The Human Equation')
     stream_album('Ayreon', 'Into The Electric Castle ')
