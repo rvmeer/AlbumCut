@@ -7,17 +7,18 @@ import requests
 import os.path
 import argparse
 import json
+from slugify import slugify
 
 username = None
 client_id = None
 client_secret = None
 redirect_uri = None
-with open('./albumcut_config.json','rb') as config_file:
+with open('./albumcut_config.json', 'rb') as config_file:
     config = json.loads(config_file.read())
     username = config['username']
     client_id = config['client_id']
     client_secret = config['client_secret']
-    redirect_url = config['redirect_uri']
+    redirect_uri = config['redirect_uri']
 
 
 def get_artist_url(artist_name):
@@ -54,14 +55,14 @@ def get_album(artist_url, album_name, market):
     spotify = spotipy.Spotify()
     result = PagedResult(spotify, spotify.artist_albums(artist_url, album_type='album'))
     album = next(iter([album for album in result.get_items() if
-                   album['name'].encode('utf-8') == album_name and market.decode('utf-8') in (
-                       album['available_markets'] or [])]), None)
+                       album['name'].encode('utf-8') == album_name and market.decode('utf-8') in (
+                           album['available_markets'] or [])]), None)
     if not album:
         print 'Album {0} for artist {1} not found'.format(album_name, artist_url)
         print 'Choose one of:'
         print '\n'.join(
             ['   {0} ({1})'.format(album['name'].encode('utf-8'), album['id']) for album in result.get_items() if
-            market.decode('utf-8') in (album['available_markets'] or [])])
+             market.decode('utf-8') in (album['available_markets'] or [])])
         return None
     print 'Album found with Spotify: {0}'.format(album['id'])
     return album
@@ -71,7 +72,7 @@ def save_cover(album, folder):
     # Get the large cover image and write to cover_file_path
     large_image = sorted(album['images'], key=lambda image: image['width'])[-1]
     response = requests.get(large_image['url'])
-    filename = album['name']
+    filename = slugify(album['name'].encode('utf-8'))
     if response.headers['Content-Type'] == 'image/jpeg':
         filename = '{0}.jpg'.format(filename)
 
@@ -118,7 +119,7 @@ def cut_album(audio_file_path, cover_file_path, artist_name, album):
         file_handle = audio_track.export(track_file_path,
                                          format='mp3',
                                          bitrate='320k',
-                                         tags={'album': album['name'], 'artist': artist_name, 'track': track_index},
+                                         tags={'album': album['name'].encode('utf-8'), 'artist': artist_name, 'track': track_index},
                                          cover=cover_file_path)
 
         track_index += 1
@@ -145,6 +146,17 @@ class ExtendedSpotify(spotipy.Spotify):
     def me_player_pause(self, device_id):
         return self._put('me/player/pause?device_id={0}'.format(device_id))
 
+def get_device_names():
+    scopes = [
+        'user-read-playback-state', 'user-modify-playback-state'
+    ]
+    token = util.prompt_for_user_token(username=username, scope=' '.join(scopes),
+                                       client_id=client_id,
+                                       client_secret=client_secret,
+                                       redirect_uri=redirect_uri)
+
+    spotify = ExtendedSpotify(auth=token)
+    return spotify.me_player_devices()
 
 def play_album(album, device_name):
     scopes = [

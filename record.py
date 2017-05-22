@@ -10,6 +10,7 @@ from Queue import Queue
 import sounddevice as sd
 import soundfile as sf
 from datetime import datetime
+import os
 
 recorder_queue = Queue()
 
@@ -21,6 +22,10 @@ class Recorder(object):
 
         self.file = None
         self.inputStream = None
+
+    @staticmethod
+    def query_devices():
+        return sd.query_devices()
 
     def start(self):
         device_info = sd.query_devices(self.device_index, 'input')
@@ -62,6 +67,9 @@ class Recorder(object):
             if status:
                 print(status)
             q.put(indata.copy())
+
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
         # Make sure the file is opened before recording anything:
         with sf.SoundFile(self.filename, mode='x', samplerate=samplerate,
