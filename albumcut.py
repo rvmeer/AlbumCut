@@ -26,9 +26,11 @@ def stream_album(artist_name, album_name, recording_device_index):
 
 
     # Get the wav
-    audio_file_path = '{0}.wav'.format(slugify(album_name))
+    audio_file_path = '{0}.wav'.format(slugify(album_name.decode('utf-8')))
 
-    device_name = socket.gethostname()
+    #device_name = socket.gethostname()
+    device_name = spotify.get_active_device_name()
+
     spotify.play_album(album, device_name=device_name)
     print('Started playback of Spotify album')
     #recorder = Recorder(audio_file_path,device_index=3)
@@ -42,7 +44,4 @@ def stream_album(artist_name, album_name, recording_device_index):
     return spotify.cut_album(audio_file_path, cover_file_path, artist_name, album)
 
 if __name__ == "__main__":
-    print(Recorder.query_devices())
-    #device_names = spotify.get_device_names()
-    #pass
     stream_album('Rowwen Heze', "Kilomeaters ('T Beste Van 20 Joar Rowwen Hèze)", 1)

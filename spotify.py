@@ -72,7 +72,7 @@ def save_cover(album, folder):
     # Get the large cover image and write to cover_file_path
     large_image = sorted(album['images'], key=lambda image: image['width'])[-1]
     response = requests.get(large_image['url'])
-    filename = slugify(album['name'].encode('utf-8'))
+    filename = slugify(album['name'])
     if response.headers['Content-Type'] == 'image/jpeg':
         filename = '{0}.jpg'.format(filename)
 
@@ -119,7 +119,8 @@ def cut_album(audio_file_path, cover_file_path, artist_name, album):
         file_handle = audio_track.export(track_file_path,
                                          format='mp3',
                                          bitrate='320k',
-                                         tags={'album': album['name'].encode('utf-8'), 'artist': artist_name, 'track': track_index},
+                                         tags={'album': album['name'].encode('utf-8'), 'artist': artist_name,
+                                               'track': track_index},
                                          cover=cover_file_path)
 
         track_index += 1
@@ -146,6 +147,7 @@ class ExtendedSpotify(spotipy.Spotify):
     def me_player_pause(self, device_id):
         return self._put('me/player/pause?device_id={0}'.format(device_id))
 
+
 def get_device_names():
     scopes = [
         'user-read-playback-state', 'user-modify-playback-state'
@@ -158,7 +160,20 @@ def get_device_names():
     spotify = ExtendedSpotify(auth=token)
     return spotify.me_player_devices()
 
+
+def get_active_device_name():
+    active_device = next(
+        iter([device for device in get_device_names().get('devices', []) if device.get('is_active', False)]), None)
+    if active_device:
+        return active_device.get('name', None)
+    else:
+        return None
+
+
 def play_album(album, device_name):
+    if not type(device_name) == str:
+        device_name = device_name.encode('utf-8')
+
     scopes = [
         'user-read-playback-state', 'user-modify-playback-state'
     ]
