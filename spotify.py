@@ -171,9 +171,6 @@ def get_active_device_name():
 
 
 def play_album(album, device_name):
-    if not type(device_name) == str:
-        device_name = device_name.encode('utf-8')
-
     scopes = [
         'user-read-playback-state', 'user-modify-playback-state'
     ]

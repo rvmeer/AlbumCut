@@ -30,6 +30,8 @@ def stream_album(artist_name, album_name, recording_device_index):
 
     #device_name = socket.gethostname()
     device_name = spotify.get_active_device_name()
+    if not type(device_name) == str:
+        device_name = device_name.encode('utf-8')
 
     spotify.play_album(album, device_name=device_name)
     print('Started playback of Spotify album')
@@ -44,4 +46,6 @@ def stream_album(artist_name, album_name, recording_device_index):
     return spotify.cut_album(audio_file_path, cover_file_path, artist_name, album)
 
 if __name__ == "__main__":
-    stream_album('Rowwen Heze', "Kilomeaters ('T Beste Van 20 Joar Rowwen Hèze)", 1)
+    stream_album('Rowwen Heze', "Kilomeaters ('T Beste Van 20 Joar Rowwen Hèze)", 3)
+    stream_album('De Poema\'s', 'Best Of De Poema\'s', 3)
+    stream_album('Veldhuis & Kwmper', 'Hollandse Sterren Collectie', 3)
