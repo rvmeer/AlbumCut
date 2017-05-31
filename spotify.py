@@ -9,16 +9,7 @@ import argparse
 import json
 from slugify import slugify
 
-username = None
-client_id = None
-client_secret = None
-redirect_uri = None
-with open('./albumcut_config.json', 'rb') as config_file:
-    config = json.loads(config_file.read())
-    username = config['username']
-    client_id = config['client_id']
-    client_secret = config['client_secret']
-    redirect_uri = config['redirect_uri']
+
 
 
 def get_artist_url(artist_name):
@@ -49,6 +40,17 @@ class PagedResult(object):
             self.items.extend(self.result['items'])
 
         return self.items
+
+
+def get_album_by_id(album_id):
+        spotify = spotipy.Spotify(auth=get_token())
+        album = spotify.album(album_id)
+
+        if not album:
+            print 'Album for id {0} not found'.format(album_id)
+            return None
+        print 'Album found with Spotify: {0}'.format(album['id'])
+        return album
 
 
 def get_album(artist_url, album_name, market):
@@ -87,7 +89,7 @@ def save_cover(album, folder):
 
 
 def get_tracks(album):
-    spotify = spotipy.Spotify()
+    spotify = spotipy.Spotify(auth=get_token())
     tracks = PagedResult(spotify, spotify.album_tracks(album['id'])).get_items()
     return tracks
 
@@ -149,15 +151,9 @@ class ExtendedSpotify(spotipy.Spotify):
 
 
 def get_device_names():
-    scopes = [
-        'user-read-playback-state', 'user-modify-playback-state'
-    ]
-    token = util.prompt_for_user_token(username=username, scope=' '.join(scopes),
-                                       client_id=client_id,
-                                       client_secret=client_secret,
-                                       redirect_uri=redirect_uri)
 
-    spotify = ExtendedSpotify(auth=token)
+
+    spotify = ExtendedSpotify(auth=get_token())
     return spotify.me_player_devices()
 
 
@@ -171,15 +167,8 @@ def get_active_device_name():
 
 
 def play_album(album, device_name):
-    scopes = [
-        'user-read-playback-state', 'user-modify-playback-state'
-    ]
-    token = util.prompt_for_user_token(username=username, scope=' '.join(scopes),
-                                       client_id=client_id,
-                                       client_secret=client_secret,
-                                       redirect_uri=redirect_uri)
 
-    spotify = ExtendedSpotify(auth=token)
+    spotify = ExtendedSpotify(auth=get_token())
     devices = spotify.me_player_devices().get('devices', None) or []
     my_device = next(iter([device for device in devices if device['name'].encode('utf-8') == device_name]), None)
     if not my_device:
@@ -194,17 +183,32 @@ def play_album(album, device_name):
     }
     return spotify.me_player_play(my_device['id'], data)
 
+def get_token():
+    username = None
+    client_id = None
+    client_secret = None
+    redirect_uri = None
+    with open('./albumcut_config.json', 'rb') as config_file:
+        config = json.loads(config_file.read())
+        username = config['username']
+        client_id = config['client_id']
+        client_secret = config['client_secret']
+        redirect_uri = config['redirect_uri']
 
-def pause_playback(device_name):
     scopes = [
-        'user-read-playback-state', 'user-modify-playback-state'
+        'user-read-playback-state', 'user-modify-playback-state', 'user-library-read'
     ]
     token = util.prompt_for_user_token(username=username, scope=' '.join(scopes),
                                        client_id=client_id,
                                        client_secret=client_secret,
                                        redirect_uri=redirect_uri)
 
-    spotify = ExtendedSpotify(auth=token)
+    return token
+
+def pause_playback(device_name):
+
+
+    spotify = ExtendedSpotify(auth=get_token())
     devices = spotify.me_player_devices().get('devices', None) or []
     my_device = next(iter([device for device in devices if device['name'].encode('utf-8') == device_name]), None)
     if not my_device:
@@ -212,6 +216,11 @@ def pause_playback(device_name):
         return None
 
     return spotify.me_player_pause(my_device['id'])
+
+def get_my_albums():
+    spotify=spotipy.Spotify(auth=get_token())
+    albums = spotify.current_user_saved_albums()
+    return albums
 
 
 if __name__ == "__main__":
