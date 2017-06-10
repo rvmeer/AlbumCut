@@ -16,4 +16,4 @@ for album in albums['items']:
     artist_name = artist['name'].encode('utf-8')
 
     print('Streaming album {0}, artist={1}'.format(album_name, artist_name))
-    albumcut.stream_album(recording_device_index=3, album_id = album['id'].encode('utf-8'))
+    albumcut.stream_album(recording_device_index=3, album_id = album['id'].encode('utf-8'), artist_name=artist_name)
