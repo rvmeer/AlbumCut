@@ -9,7 +9,7 @@ import socket
 
 def stream_playlist(playlist, recording_device_index=1):
     tracks = spotify.get_tracks_for_playlist(playlist)
-    total_time_ms = sum([item['track']['duration_ms'] for item in tracks])
+    total_time_ms = sum([item['duration_ms'] for item in tracks])
     stop_date_time = datetime.now() + timedelta(
         milliseconds=total_time_ms + 5000)  # Add an extra 5s to be sure we capture the whole playlist
 

@@ -104,7 +104,7 @@ def get_tracks_for_playlist(playlist):
     current_user_id = spotify.me()['id']
     playlist_id = playlist['id']
     tracks = PagedResult(spotify, spotify.user_playlist_tracks(current_user_id ,playlist_id)).get_items()
-    return tracks
+    return [t['track'] for t in tracks]
 
 
 def cut_album(audio_file_path, cover_file_path, artist_name, album):
@@ -165,7 +165,6 @@ def cut_playlist(audio_file_path, playlist):
     start_duration = 0
     track_index = 1
     for track in tracks:
-        track=track['track']
         track_name = track['name'].encode('utf-8')
         track_duration = track['duration_ms']
         audio_track = audio[start_duration:start_duration + track_duration]
@@ -305,6 +304,30 @@ def get_my_playlist(name):
             return playlist
 
     return None
+
+
+# Returns the playlist with tracks
+def get_my_playlist(id):
+    spotify=spotipy.Spotify(auth=get_token())
+    playlists = spotify.current_user_playlists()
+
+    for playlist in playlists['items']:
+        if playlist['id'].encode('utf-8') == id:
+            tracks = get_tracks_for_playlist(playlist)
+            playlist['tracks'] = tracks
+            return playlist
+
+    return None
+
+
+def get_my_playlists():
+    spotify=spotipy.Spotify(auth=get_token())
+    playlists = spotify.current_user_playlists()
+    return playlists
+
+def get_me():
+    spotify = spotipy.Spotify(auth=get_token())
+    return spotify.me()
 
 
 if __name__ == "__main__":
