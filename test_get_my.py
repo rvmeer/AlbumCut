@@ -4,7 +4,7 @@ import spotify
 import albumcut
 
 albums = spotify.get_my_albums()
-print ('The following albums will be streamed\n{0}'.format('\n'.join([album['album']['name'] for album in albums['items']])))
+print ('The following albums will be streamed\n{0}'.format('\n'.join([album['album']['name'].encode('utf-8') for album in albums['items']])))
 for album in albums['items']:
     album = album['album']
     album_name = album['name'].encode('utf-8')
