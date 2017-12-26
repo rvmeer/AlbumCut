@@ -3,6 +3,13 @@ import spotify
 
 app = Flask(__name__)
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
 
 def retain_attributes(object, attribute_names):
     result={}
@@ -34,7 +41,17 @@ def get_all():
 
 @app.route('/playlists/<id>')
 def get_playlists(id):
-    data = spotify.get_my_playlist(id)
+    data = get_my_playlist(id)
+    response = app.response_class(
+        response=json.dumps(data),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
+@app.route('/albums')
+def get_albums():
+    data = get_my_albums()
     response = app.response_class(
         response=json.dumps(data),
         status=200,
