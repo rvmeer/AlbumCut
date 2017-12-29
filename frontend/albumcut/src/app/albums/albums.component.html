@@ -1,0 +1,14 @@
+<accordion>
+  <accordion-group *ngFor="let album of albums">
+  	
+  		<div accordion-heading="true">
+  			<img class="img-circle" src="{{getSmallImageUrl(album)}}"> {{album.name}}
+  		</div>	
+       
+     
+    	<app-album [album]="album"></app-album>
+  </accordion-group>
+ 
+</accordion>
+
+

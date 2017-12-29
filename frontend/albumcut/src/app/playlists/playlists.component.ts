@@ -1,29 +1,29 @@
 import { Component, OnInit } from '@angular/core';
+
 import { DataService } from '../shared/dataService';
 
 @Component({
-    selector: 'app-home-component',
-    templateUrl: './home.component.html'
+  selector: 'app-playlists',
+  templateUrl: './playlists.component.html',
+  styleUrls: ['./playlists.component.css']
 })
+export class PlaylistsComponent implements OnInit {
 
-export class HomeComponent implements OnInit {
-
-    public message: string;
-    public albums: Album[];
+  public message: string;
+  public playlists: Playlist[];
 
     constructor(
         private _dataService: DataService) {
        
-        this.message = 'Hello from HomeComponent constructor';
         
         
     }
 
-    ngOnInit() {
+  ngOnInit() {
     
         this._dataService
-            .getAll<Album[]>('albums')
-            .subscribe((data: Album[]) => this.albums = data,
+            .getAll<Playlist[]>('playlists')
+            .subscribe((data: Playlist[]) => this.playlists = data,
             error => () => {
                 this.message = 'Error!';
             },
@@ -31,9 +31,10 @@ export class HomeComponent implements OnInit {
                 this.message = 'OK';
             });
     }
+
 }
 
-class Album{
+class Playlist{
 	public id: string;
 	public name: string;
 	public uri: string;

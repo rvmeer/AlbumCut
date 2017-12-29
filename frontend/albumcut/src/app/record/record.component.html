@@ -1,0 +1,7 @@
+
+  Albums to record:
+  	<ul>
+	  <li *ngFor="let album of albums" [ngClass]="{'hide': !album.record}">
+	    {{album.name}} <label>{{album.record}}</label>
+	  </li>
+	</ul>

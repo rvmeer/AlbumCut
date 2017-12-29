@@ -15,12 +15,12 @@ export class DataService {
         this.actionUrl = _configuration.ServerWithApiUrl ;
     }
 
-    public getAll<T>(): Observable<T> {
-        return this.http.get<T>(this.actionUrl);
+    public getAll<T>(entityName: string): Observable<T> {
+        return this.http.get<T>(this.actionUrl+'/'+entityName);
     }
 
-    public getSingle<T>(id: number): Observable<T> {
-        return this.http.get<T>(this.actionUrl + id);
+    public getSingle<T>(entityName: string, id: string): Observable<T> {
+        return this.http.get<T>(this.actionUrl + '/'+ entityName + '/' + id);
     }
 
     public add<T>(itemName: string): Observable<T> {

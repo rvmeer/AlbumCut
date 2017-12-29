@@ -1,0 +1,17 @@
+<form>
+  <div class="form-group">
+    <label>Artist:</label>
+    <label>{{getArtistName()}}</label>
+  </div>
+  <div class="form-group">
+    <label>Label:</label>
+    <label>{{album && album.label}} {{album.record}}</label>
+  </div>
+  <div class="form-group">
+    <label for="record">Record:</label>
+    <input type="checkbox" id="record" [(ngModel)]="album.record" name="record">
+  </div>
+</form>
+
+
+
